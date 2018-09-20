@@ -8,10 +8,11 @@ package test;
 
 import controller.Controller;
 import data.Position;
-import data.SensorDBData;
 import data.SensorData;
 import exception.ThresholdException;
 import org.junit.*;
+
+import java.util.Date;
 
 import static java.lang.Math.pow;
 import static org.junit.Assert.assertEquals;
@@ -30,13 +31,13 @@ public class ControllerTest {
 
     @Test
     public void calculateTestUnderThreshold() {
-        sensorData = new SensorData(new Position(10, 10, 10));
-        sensorData2 = new SensorData(new Position(20, 20, 20));
+        sensorData = new SensorData(new Position(0, new Date(), 10, 10, 10));
+        sensorData2 = new SensorData(new Position(0, new Date(), 20, 20, 20));
         double expected = Math.sqrt(pow(sensorData2.getPosition().getxPos() - sensorData.getPosition().getxPos(), 2) +
                                     pow(sensorData2.getPosition().getyPos() - sensorData.getPosition().getyPos(), 2) +
                                     pow(sensorData2.getPosition().getzPos() - sensorData.getPosition().getzPos(), 2));
 
-        SensorDBData sd = null;
+        SensorData sd = null;
         try {
             sd = controller.calculate(sensorData, sensorData2);
         } catch (ThresholdException e) {
@@ -45,15 +46,15 @@ public class ControllerTest {
         }
 
         assertNotNull("Sensor Database Data was never initialized!", sd);
-        assertEquals("Acceleration data calculation was not equal!", expected, sd.getAccel(), 0.01);
+        assertEquals("Acceleration data calculation was not equal!", expected, sd.getAcceleration().getAccelMag(), 0);
     }
 
     @Test
     public void calculateTestOverThreshold() {
-        sensorData = new SensorData(new Position(10, 10, 10));
-        sensorData2 = new SensorData(new Position(50, 50, 50));
+        sensorData = new SensorData(new Position(0, new Date(), 10, 10, 10));
+        sensorData2 = new SensorData(new Position(0, new Date(), 50, 50, 50));
 
-        SensorDBData sd = null;
+        SensorData sd = null;
         try {
             sd = controller.calculate(sensorData, sensorData2);
         } catch (ThresholdException e) {
